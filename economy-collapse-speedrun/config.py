@@ -10,6 +10,7 @@ PORT = 8000
 
 # Min players to start
 MIN_PLAYERS = 2
+MAX_PLAYERS = 50
 
 # OpenRouter / Grok
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")

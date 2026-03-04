@@ -99,6 +99,8 @@ class Game:
             return False
         if name in self.players:
             return False
+        if len(self.players) >= config.MAX_PLAYERS:
+            return False
         self.players[name] = PlayerData()
         return True
 

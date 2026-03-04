@@ -1,1038 +1,1646 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Economy Collapse Speedrun v2 — Parliament Edition</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economy Collapse Speedrun v2 — Parliament Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-html, body {
-  width: 100%; height: 100vh; overflow: hidden;
-  background: #080c14; color: #e2e8f0;
-  font-family: 'Outfit', sans-serif;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* ===== TOP BAR ===== */
-#top-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  height: 56px; padding: 0 24px;
-  background: linear-gradient(180deg, #0f1520 0%, #080c14 100%);
-  border-bottom: 1px solid #1e293b;
-  position: relative; z-index: 10;
-}
-.tb-title {
-  font-size: 13px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
-  background: linear-gradient(90deg, #ef4444 0%, #f59e0b 35%, #10b981 70%, #8b5cf6 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.tb-center {
-  position: absolute; left: 50%; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 16px;
-}
-.tb-round {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 15px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #94a3b8;
-}
-.tb-phase {
-  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  color: #64748b; background: #111827; padding: 4px 12px; border-radius: 6px;
-}
-.tb-right { display: flex; align-items: center; gap: 20px; }
-.tb-timer {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 36px; font-weight: 800; color: #f1f5f9;
-  letter-spacing: 2px; font-variant-numeric: tabular-nums;
-}
-.tb-timer.warning { color: #f59e0b; }
-.tb-timer.critical { color: #ef4444; animation: pulse-text 0.5s ease-in-out infinite alternate; }
-@keyframes pulse-text { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.tb-destruction {
-  display: flex; flex-direction: column; align-items: center; gap: 1px;
-}
-.tb-destruction .label {
-  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #475569;
-}
-.tb-destruction .value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 22px; font-weight: 800; color: #ef4444;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f1923 0%, #1b2838 100%);
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* ===== MAIN LAYOUT ===== */
-#main-area {
-  display: flex; height: calc(100vh - 56px - 40px); overflow: hidden;
-}
+        /* ANIMATION KEYFRAMES */
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
 
-/* --- Economy Sidebar --- */
-#economy-sidebar {
-  width: 180px; padding: 16px 14px;
-  background: #0a0f18; border-right: 1px solid #1e293b;
-  display: flex; flex-direction: column; justify-content: center; gap: 12px;
-  flex-shrink: 0;
-}
-.eco-row { display: flex; flex-direction: column; gap: 3px; }
-.eco-header { display: flex; justify-content: space-between; align-items: baseline; }
-.eco-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; color: #64748b;
-}
-.eco-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums;
-  transition: color 0.8s ease;
-}
-.eco-track {
-  width: 100%; height: 8px; background: #111827; border-radius: 4px; overflow: hidden;
-}
-.eco-fill {
-  height: 100%; border-radius: 4px;
-  transition: width 0.8s ease, background-color 0.8s ease;
-}
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
 
-/* --- Content Area --- */
-#content-area {
-  flex: 1; padding: 20px 24px; display: flex; flex-direction: column; overflow: hidden;
-}
+        @keyframes blink {
+            0%, 49%, 100% { opacity: 1; }
+            50%, 99% { opacity: 0; }
+        }
 
-/* Scenario */
-#scenario-bar {
-  margin-bottom: 16px; min-height: 48px;
-}
-#scenario-headline {
-  font-size: 24px; font-weight: 900; color: #f8fafc; line-height: 1.15;
-  letter-spacing: -0.5px;
-}
-#scenario-description {
-  font-size: 13px; color: #64748b; margin-top: 4px; line-height: 1.4;
-}
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-/* Proposals Grid */
-#proposals-grid {
-  flex: 1; display: grid; grid-template-columns: 1fr 1fr;
-  gap: 12px; overflow: hidden;
-}
-.prop-card {
-  background: #111827; border-radius: 12px; padding: 14px 16px;
-  border: 2px solid #1e293b; display: flex; flex-direction: column;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-}
-.prop-card.winner {
-  border-color: #f59e0b; box-shadow: 0 0 30px rgba(245,158,11,0.15);
-}
-.prop-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 8px; flex-shrink: 0;
-}
-.prop-name {
-  font-size: 11px; font-weight: 800; letter-spacing: 2px;
-  text-transform: uppercase; color: #475569;
-}
-.prop-votes {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px; font-weight: 700; color: #f59e0b; display: none;
-}
-.prop-text {
-  font-size: 18px; font-weight: 600; color: #e2e8f0; line-height: 1.35;
-  flex: 1; word-break: break-word; overflow: hidden;
-}
-.prop-text .cursor {
-  display: inline-block; width: 2px; height: 20px;
-  background: #8b5cf6; animation: blink 0.7s step-end infinite;
-  vertical-align: text-bottom; margin-left: 2px;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
-/* Vote bars inside proposal cards */
-.prop-votebar { display: none; margin-top: auto; padding-top: 8px; flex-shrink: 0; }
-.prop-votebar-track {
-  width: 100%; height: 6px; background: #0a0f18; border-radius: 3px; overflow: hidden;
-}
-.prop-votebar-fill {
-  height: 100%; border-radius: 3px; transition: width 0.4s ease; background: #3b82f6;
-}
-.prop-votebar-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px; font-weight: 700; color: #475569; margin-top: 3px; text-align: right;
-}
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
 
-/* Copy disclaimer */
-#copy-disclaimer {
-  display: none; text-align: center; margin-top: 8px;
-  font-size: 11px; font-weight: 700; color: #f59e0b; letter-spacing: 0.5px;
-  padding: 6px; background: rgba(245,158,11,0.06); border-radius: 6px;
-}
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
 
-/* ===== BOTTOM TICKER ===== */
-#bottom-strip {
-  height: 40px; background: #060910; border-top: 1px solid #1e293b;
-  display: flex; align-items: center; overflow: hidden;
-}
-.ticker-label {
-  background: #dc2626; color: #fff;
-  font-size: 10px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
-  padding: 0 14px; height: 100%; display: flex; align-items: center; flex-shrink: 0;
-}
-.ticker-track { flex: 1; overflow: hidden; height: 100%; display: flex; align-items: center; }
-#ticker-content {
-  display: inline-block; white-space: nowrap;
-  animation: marquee 35s linear infinite;
-  font-size: 13px; font-weight: 600; color: #f59e0b; padding-left: 100%;
-  letter-spacing: 0.3px;
-}
-@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-100%)} }
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(0, 180, 216, 0.3),
+                            inset 0 0 10px rgba(0, 180, 216, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(0, 180, 216, 0.6),
+                            inset 0 0 20px rgba(0, 180, 216, 0.2);
+            }
+        }
 
-/* ===== OVERLAYS ===== */
-.overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 100; display: none; align-items: center; justify-content: center;
-}
-.overlay.active { display: flex; }
+        @keyframes scrollLeft {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
 
-/* --- Settings --- */
-#settings-overlay {
-  background: #080c14; flex-direction: column; gap: 28px; padding: 48px;
-}
-.settings-title {
-  font-size: 48px; font-weight: 900; text-align: center; letter-spacing: -1px;
-  background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #8b5cf6);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.settings-subtitle {
-  font-size: 16px; color: #475569; text-align: center; margin-top: -16px;
-  letter-spacing: 4px; text-transform: uppercase; font-weight: 700;
-}
-.mode-toggle { display: flex; gap: 14px; max-width: 500px; width: 100%; }
-.mode-btn {
-  flex: 1; padding: 20px; font-size: 16px; font-weight: 700;
-  border: 2px solid #1e293b; border-radius: 14px; background: #111827;
-  color: #64748b; cursor: pointer; text-align: center; transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
-}
-.mode-btn.active { border-color: #8b5cf6; color: #f1f5f9; background: rgba(139,92,246,0.08); }
-.mode-btn:hover { border-color: #334155; }
-.mode-btn small { display: block; color: #475569; font-weight: 400; font-size: 13px; margin-top: 4px; }
-.settings-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 500px; width: 100%;
-}
-.sg-group { display: flex; flex-direction: column; gap: 6px; }
-.sg-group label {
-  font-size: 11px; font-weight: 700; color: #475569;
-  text-transform: uppercase; letter-spacing: 1.5px;
-}
-.sg-group select {
-  padding: 12px 14px; font-size: 15px; font-weight: 600;
-  background: #111827; border: 2px solid #1e293b; border-radius: 10px;
-  color: #e2e8f0; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif;
-}
-.sg-group select:focus { border-color: #8b5cf6; }
-.btn-continue {
-  padding: 16px 56px; font-size: 16px; font-weight: 800;
-  letter-spacing: 2px; text-transform: uppercase;
-  background: #8b5cf6; color: #fff; border: none; border-radius: 12px;
-  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 4px 24px rgba(139,92,246,0.3);
-  font-family: 'Outfit', sans-serif;
-}
-.btn-continue:hover { transform: scale(1.03); }
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
-/* --- Lobby --- */
-#lobby-overlay { background: #080c14; flex-direction: column; gap: 20px; }
-.lobby-title {
-  font-size: 52px; font-weight: 900; letter-spacing: -1px; text-align: center; line-height: 1.05;
-  background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #8b5cf6);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.lobby-subtitle {
-  font-size: 20px; font-weight: 600; color: #475569; text-align: center;
-  letter-spacing: 3px; text-transform: uppercase;
-}
-.qr-box {
-  background: #fff; padding: 14px; border-radius: 14px;
-  box-shadow: 0 0 80px rgba(139,92,246,0.2);
-}
-.qr-box img { width: 220px; height: 220px; display: block; }
-.lobby-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 18px; font-weight: 700; color: #94a3b8; text-align: center;
-}
-.lobby-count span { color: #10b981; font-weight: 800; }
-.lobby-chips {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
-  max-width: 700px; margin: 0 auto;
-}
-.lobby-chip {
-  background: #111827; border: 1px solid #1e293b; border-radius: 20px;
-  padding: 6px 18px; font-size: 15px; font-weight: 600; color: #e2e8f0;
-  animation: chipIn 0.3s ease;
-}
-@keyframes chipIn { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
-.btn-start {
-  padding: 16px 64px; font-size: 18px; font-weight: 900;
-  letter-spacing: 2px; text-transform: uppercase;
-  background: #10b981; color: #fff; border: none; border-radius: 12px;
-  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 4px 24px rgba(16,185,129,0.3);
-  font-family: 'Outfit', sans-serif;
-}
-.btn-start:hover { transform: scale(1.03); }
-.btn-start:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; transform: none; }
-.lobby-note { font-size: 12px; color: #334155; text-align: center; }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-/* --- Loading --- */
-#loading-overlay { background: rgba(8,12,20,0.94); flex-direction: column; gap: 20px; }
-.ld-spinner {
-  width: 48px; height: 48px; border: 4px solid #1e293b; border-top-color: #8b5cf6;
-  border-radius: 50%; animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to{transform:rotate(360deg)} }
-.ld-message {
-  font-size: 20px; font-weight: 700; color: #94a3b8; text-align: center;
-  animation: pulse-text 1.5s ease-in-out infinite;
-}
+        /* BASE LAYOUT */
+        .top-bar {
+            background: rgba(15, 25, 40, 0.95);
+            border-bottom: 2px solid #00b4d8;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.6s ease;
+        }
 
-/* --- Role Reveal --- */
-#role-reveal-overlay { background: rgba(8,12,20,0.96); flex-direction: column; gap: 18px; }
-.reveal-title {
-  font-size: 32px; font-weight: 900; color: #f59e0b;
-  text-transform: uppercase; letter-spacing: 2px;
-}
-.reveal-list { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-.reveal-chip {
-  background: rgba(139,92,246,0.1); border: 2px solid #8b5cf6; border-radius: 12px;
-  padding: 12px 24px; font-size: 18px; font-weight: 700; color: #e2e8f0;
-}
-.reveal-note { font-size: 16px; color: #64748b; }
+        .top-bar-left {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
 
-/* --- Results --- */
-#results-overlay { background: rgba(8,12,20,0.96); flex-direction: column; gap: 20px; padding: 40px; }
-.results-title {
-  font-size: 28px; font-weight: 900; color: #f59e0b;
-  text-transform: uppercase; letter-spacing: 2px;
-}
-.vote-chart { display: flex; align-items: flex-end; gap: 24px; height: 150px; }
-.vc-col { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 90px; }
-.vc-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 16px; font-weight: 800; color: #94a3b8;
-}
-.vc-bar-wrap {
-  width: 60px; height: 130px; background: #111827; border-radius: 8px;
-  display: flex; align-items: flex-end; overflow: hidden; border: 1px solid #1e293b;
-}
-.vc-bar-inner {
-  width: 100%; border-radius: 6px; transition: height 0.6s ease; background: #3b82f6;
-}
-.vc-bar-inner.winner { background: #f59e0b; }
-.vc-label {
-  font-size: 12px; font-weight: 700; color: #94a3b8; text-align: center;
-  max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.wp-box {
-  background: #111827; border: 2px solid #f59e0b; border-radius: 12px;
-  padding: 14px 28px; max-width: 600px; text-align: center;
-}
-.wp-label {
-  font-size: 10px; font-weight: 800; letter-spacing: 2px;
-  text-transform: uppercase; color: #f59e0b; margin-bottom: 4px;
-}
-.wp-text { font-size: 16px; font-weight: 600; color: #f1f5f9; }
-.eco-changes { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 700px; }
-.ec-item {
-  background: #111827; border-radius: 8px; padding: 6px 12px;
-  display: flex; align-items: center; gap: 6px; border: 1px solid #1e293b;
-}
-.ec-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #475569; }
-.ec-old { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #475569; }
-.ec-arrow { font-size: 12px; color: #334155; }
-.ec-new { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; }
-.ec-new.up { color: #10b981; }
-.ec-new.down { color: #ef4444; }
-.ec-new.same { color: #475569; }
+        .top-bar-right {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
 
-/* --- Game Over --- */
-#gameover-overlay {
-  background: rgba(8,12,20,0.98); flex-direction: column; gap: 16px;
-  overflow-y: auto; padding: 32px 40px; align-items: center;
-}
-.go-title { font-size: 48px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
-.go-title.collapsed { color: #ef4444; animation: shake 0.4s ease-in-out 3; }
-.go-title.survived { color: #10b981; }
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px) rotate(-1deg)} 75%{transform:translateX(8px) rotate(1deg)} }
-.go-narrative {
-  font-size: 15px; color: #64748b; text-align: center; max-width: 650px;
-  line-height: 1.6; font-style: italic;
-}
-.go-section {
-  font-size: 11px; font-weight: 800; color: #334155;
-  text-transform: uppercase; letter-spacing: 3px; margin-top: 12px;
-}
+        .round-pill, .phase-pill {
+            background: rgba(0, 180, 216, 0.2);
+            border: 1.5px solid #00b4d8;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #00b4d8;
+            box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.1);
+        }
 
-/* AI Reveal */
-.air-round {
-  background: #111827; border-radius: 12px; padding: 14px 18px;
-  width: 100%; max-width: 850px; margin-bottom: 8px;
-}
-.air-round-label {
-  font-size: 12px; font-weight: 800; color: #334155;
-  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
-}
-.air-prop {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 6px 0; border-top: 1px solid #1e293b;
-}
-.air-prop:first-of-type { border-top: none; }
-.air-score {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 18px; font-weight: 800; min-width: 44px; text-align: center;
-  padding: 3px 0; border-radius: 6px;
-}
-.air-score.high { color: #10b981; background: rgba(16,185,129,0.08); }
-.air-score.mid { color: #f59e0b; background: rgba(245,158,11,0.08); }
-.air-score.low { color: #ef4444; background: rgba(239,68,68,0.08); }
-.air-details { flex: 1; min-width: 0; }
-.air-winner { font-size: 10px; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px; }
-.air-text { font-size: 13px; color: #cbd5e1; margin-bottom: 2px; }
-.air-comment { font-size: 12px; color: #475569; font-style: italic; }
-.air-votes { font-size: 11px; color: #334155; }
+        #round-counter {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
 
-/* Leaderboards */
-.go-lbs { display: flex; gap: 20px; width: 100%; max-width: 850px; }
-.go-lb { flex: 1; background: #111827; border-radius: 12px; overflow: hidden; }
-.go-lb .lb-title {
-  padding: 10px 14px 4px; font-size: 11px; color: #475569;
-  text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;
-}
-.go-lb table { width: 100%; border-collapse: collapse; }
-.go-lb th {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: #334155; padding: 5px 12px; text-align: left; border-bottom: 1px solid #1e293b;
-}
-.go-lb th:last-child { text-align: right; }
-.go-lb td {
-  padding: 7px 12px; font-size: 14px; font-weight: 600; color: #94a3b8;
-  border-bottom: 1px solid #080c14;
-}
-.go-lb td:first-child { color: #334155; font-size: 12px; width: 32px; }
-.go-lb td:last-child {
-  text-align: right; font-weight: 800; font-variant-numeric: tabular-nums;
-  font-family: 'JetBrains Mono', monospace;
-}
-.go-lb tr:first-child td { color: #f59e0b; font-weight: 900; }
+        #phase-label {
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse 2s ease-in-out infinite;
+        }
 
-/* Awards */
-.go-awards { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
-.award-card {
-  background: #111827; border-radius: 12px; padding: 14px 24px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  border: 1px solid #1e293b; min-width: 170px;
-}
-.award-card .aw-icon { font-size: 32px; }
-.award-card .aw-title { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #475569; }
-.award-card .aw-name { font-size: 20px; font-weight: 900; color: #f1f5f9; }
-.award-card .aw-detail { font-size: 12px; color: #334155; }
-</style>
+        #game-timer {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+        }
+
+        #game-timer.warning {
+            color: #f59e0b;
+            animation: pulse 1s ease-in-out infinite;
+            text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+        }
+
+        #game-timer.critical {
+            color: #ef4444;
+            animation: pulse 0.5s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+        }
+
+        .destruction-badge {
+            background: linear-gradient(135deg, #ff6b35, #dc2626);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* ECONOMY SIDEBAR */
+        #economy-sidebar {
+            width: 220px;
+            background: rgba(15, 25, 40, 0.85);
+            border: 1.5px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            animation: slideInLeft 0.6s ease;
+        }
+
+        #economy-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #economy-sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 180, 216, 0.1);
+            border-radius: 10px;
+        }
+
+        #economy-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0, 180, 216, 0.5);
+            border-radius: 10px;
+        }
+
+        .eco-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px;
+            background: rgba(0, 180, 216, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #00b4d8;
+        }
+
+        .eco-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+
+        .eco-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .eco-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .eco-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .eco-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b4d8, #0077b6);
+            border-radius: 3px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 180, 216, 0.4);
+        }
+
+        /* CONTENT AREA */
+        #content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 0 20px;
+            overflow-y: auto;
+            animation: slideInUp 0.6s ease;
+        }
+
+        #content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #content-area::-webkit-scrollbar-track {
+            background: rgba(0, 180, 216, 0.05);
+        }
+
+        #content-area::-webkit-scrollbar-thumb {
+            background: rgba(0, 180, 216, 0.4);
+            border-radius: 10px;
+        }
+
+        #scenario-headline {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            line-height: 1.3;
+        }
+
+        #scenario-description {
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        #proposals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .prop-card {
+            background: linear-gradient(135deg, rgba(30, 50, 80, 0.8), rgba(20, 35, 55, 0.8));
+            border: 1.5px solid rgba(0, 180, 216, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s ease;
+            animation: slideInUp 0.5s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .prop-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 180, 216, 0.7);
+            box-shadow: 0 12px 32px rgba(0, 180, 216, 0.2);
+        }
+
+        .prop-card:nth-child(2) {
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        .prop-card:nth-child(2):hover {
+            border-color: rgba(251, 191, 36, 0.7);
+        }
+
+        .prop-card:nth-child(3) {
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .prop-card:nth-child(3):hover {
+            border-color: rgba(16, 185, 129, 0.7);
+        }
+
+        .prop-card:nth-child(4) {
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .prop-card:nth-child(4):hover {
+            border-color: rgba(139, 92, 246, 0.7);
+        }
+
+        .prop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .prop-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #00b4d8;
+            flex: 1;
+        }
+
+        .prop-votes {
+            font-size: 12px;
+            color: #fbbf24;
+            font-weight: 700;
+            display: none;
+        }
+
+        .prop-text {
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            min-height: 40px;
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            background: #00b4d8;
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+        }
+
+        .prop-votebar {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .prop-votebar-track {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .prop-votebar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b4d8, #0077b6);
+            width: 0%;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+        }
+
+        .prop-votebar-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 12px;
+            color: #fbbf24;
+            text-align: right;
+        }
+
+        #copy-disclaimer {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* BOTTOM STRIP */
+        .bottom-strip {
+            background: rgba(15, 25, 40, 0.95);
+            border-top: 2px solid rgba(251, 191, 36, 0.5);
+            padding: 12px 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+            height: 50px;
+            overflow: hidden;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #ticker-content {
+            display: inline-block;
+            color: #fbbf24;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            animation: scrollLeft 15s linear infinite;
+            padding-right: 100%;
+        }
+
+        /* OVERLAYS */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* SETTINGS OVERLAY */
+        #settings-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 24px;
+            padding: 40px;
+        }
+
+        .settings-background-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .settings-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .settings-title {
+            text-align: center;
+        }
+
+        .settings-title h1 {
+            font-size: 56px;
+            font-weight: 900;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            animation: slideDown 0.6s ease;
+        }
+
+        .settings-title p {
+            font-size: 20px;
+            color: #00b4d8;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-card {
+            width: 320px;
+            height: 280px;
+            background: rgba(15, 25, 40, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(220, 38, 38, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #mode-destructive.active {
+            border-color: #ff6b35;
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.5),
+                        inset 0 0 20px rgba(255, 107, 53, 0.1);
+            transform: scale(1.05);
+        }
+
+        #mode-destructive.active::before {
+            opacity: 1;
+        }
+
+        #mode-constructive.active {
+            border-color: #10b981;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5),
+                        inset 0 0 20px rgba(16, 185, 129, 0.1);
+            transform: scale(1.05);
+        }
+
+        #mode-constructive.active::before {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            opacity: 1;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .mode-card svg {
+            width: 200px;
+            height: 140px;
+            margin-bottom: 12px;
+        }
+
+        .mode-card h3 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .mode-card p {
+            font-size: 13px;
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        .settings-controls {
+            background: rgba(15, 25, 40, 0.9);
+            border: 1.5px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            min-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .settings-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .settings-row label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+
+        .settings-row select, .settings-row input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1.5px solid rgba(0, 180, 216, 0.5);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-row select:hover, .settings-row input:hover {
+            border-color: #00b4d8;
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        .settings-row select:focus, .settings-row input:focus {
+            outline: none;
+            border-color: #00b4d8;
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.3);
+        }
+
+        .settings-row select option {
+            background: #0f1923;
+            color: #ffffff;
+        }
+
+        .settings-continue-btn {
+            grid-column: 1 / -1;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+        }
+
+        .settings-continue-btn:hover {
+            box-shadow: 0 6px 25px rgba(0, 180, 216, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* LOBBY OVERLAY */
+        #lobby-overlay {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 32px;
+            padding: 40px;
+        }
+
+        .lobby-card {
+            background: rgba(15, 25, 40, 0.95);
+            border: 2px solid rgba(0, 180, 216, 0.5);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        #qr-img {
+            width: 280px;
+            height: 280px;
+            border: 3px solid #00b4d8;
+            border-radius: 12px;
+            animation: glow 2s ease-in-out infinite;
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.4);
+        }
+
+        .qr-label {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .player-info {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        #lobby-count {
+            font-size: 48px;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+            color: #00b4d8;
+            margin-bottom: 8px;
+        }
+
+        .player-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        #lobby-players {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            min-height: 40px;
+        }
+
+        .lobby-chip {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            animation: bounce 1s ease-in-out infinite;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .lobby-chip:nth-child(n+2) {
+            animation-delay: 0.1s;
+        }
+
+        #start-btn {
+            margin-top: 24px;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            min-width: 240px;
+        }
+
+        #start-btn:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.6);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        #start-btn:disabled {
+            background: linear-gradient(135deg, #64748b, #475569);
+            cursor: not-allowed;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #min-note {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 12px;
+        }
+
+        /* LOADING OVERLAY */
+        #loading-overlay {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(0, 180, 216, 0.2);
+            border-top: 4px solid #00b4d8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loading-message {
+            font-size: 18px;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        /* ROLE REVEAL OVERLAY */
+        #role-reveal-overlay {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 24px;
+            padding: 40px;
+        }
+
+        .reveal-card {
+            background: rgba(15, 25, 40, 0.95);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: slideInUp 0.6s ease;
+        }
+
+        .reveal-headline {
+            font-size: 32px;
+            font-weight: 900;
+            color: #8b5cf6;
+            margin-bottom: 24px;
+            text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        #reveal-parliament {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .reveal-chip {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            animation: scaleIn 0.4s ease;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        #reveal-people-note {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        /* RESULTS OVERLAY */
+        #results-overlay {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: flex-start;
+            align-items: stretch;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 900px;
+            margin: auto;
+            animation: slideInUp 0.6s ease;
+        }
+
+        #results-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #fbbf24;
+            text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
+        }
+
+        .results-chart-card {
+            background: rgba(15, 25, 40, 0.9);
+            border: 1.5px solid rgba(251, 191, 36, 0.4);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        #results-vote-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 20px;
+            height: 280px;
+            margin-bottom: 16px;
+        }
+
+        .vc-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .vc-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            color: #00b4d8;
+            min-height: 24px;
+        }
+
+        .vc-bar-wrap {
+            width: 60px;
+            height: 240px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            position: relative;
+        }
+
+        .vc-bar-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #00b4d8, #0077b6);
+            transition: height 0.6s ease;
+            position: relative;
+        }
+
+        .vc-bar-inner.winner {
+            background: linear-gradient(180deg, #fbbf24, #f59e0b);
+            box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.4), 0 0 30px rgba(251, 191, 36, 0.5);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .vc-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #cbd5e1;
+            text-align: center;
+            max-width: 70px;
+            word-break: break-word;
+        }
+
+        #results-wp-text {
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #fbbf24;
+            border-radius: 4px;
+        }
+
+        .results-changes-card {
+            background: rgba(15, 25, 40, 0.9);
+            border: 1.5px solid rgba(16, 185, 129, 0.4);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        #results-changes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .ec-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .ec-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .ec-old {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+
+        .ec-arrow {
+            display: block;
+            color: #64748b;
+            font-size: 10px;
+            margin: 4px 0;
+        }
+
+        .ec-new {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .ec-new.up {
+            color: #22c55e;
+        }
+
+        .ec-new.down {
+            color: #ef4444;
+        }
+
+        .ec-new.same {
+            color: #f59e0b;
+        }
+
+        /* GAME OVER OVERLAY */
+        #gameover-overlay {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            justify-content: flex-start;
+            align-items: stretch;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .gameover-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 1000px;
+            margin: auto;
+            animation: slideInUp 0.6s ease;
+        }
+
+        #go-title {
+            font-size: 48px;
+            font-weight: 900;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            margin-bottom: 8px;
+        }
+
+        #go-title.collapsed {
+            color: #ef4444;
+            animation: shake 0.5s ease;
+        }
+
+        #go-title.survived {
+            color: #22c55e;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        #go-narrative {
+            font-size: 16px;
+            color: #cbd5e1;
+            line-height: 1.7;
+            background: rgba(15, 25, 40, 0.8);
+            border-left: 4px solid #8b5cf6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .go-section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #00b4d8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.3);
+        }
+
+        #go-ai-reveal {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .air-round {
+            background: rgba(15, 25, 40, 0.9);
+            border: 1.5px solid rgba(0, 180, 216, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .air-round-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00b4d8;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .air-prop {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .air-prop:last-child {
+            border-bottom: none;
+        }
+
+        .air-score {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        .air-score.high {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .air-score.mid {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .air-score.low {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .air-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .air-winner {
+            font-size: 12px;
+            color: #fbbf24;
+            font-weight: 700;
+        }
+
+        .air-text {
+            font-size: 13px;
+            color: #cbd5e1;
+            font-style: italic;
+        }
+
+        .air-comment {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .air-votes {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        #go-awards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .award-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1.5px solid rgba(139, 92, 246, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            animation: slideInUp 0.5s ease;
+        }
+
+        .award-card:hover {
+            border-color: rgba(139, 92, 246, 0.7);
+            transform: translateY(-3px);
+        }
+
+        .aw-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .aw-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8b5cf6;
+            margin-bottom: 4px;
+        }
+
+        .aw-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .aw-detail {
+            font-size: 11px;
+            color: #cbd5e1;
+        }
+
+        #go-leaderboards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 16px;
+        }
+
+        .go-lb {
+            background: rgba(15, 25, 40, 0.9);
+            border: 1.5px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lb-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #10b981;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .go-lb table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .go-lb table thead {
+            border-bottom: 1px solid rgba(0, 180, 216, 0.3);
+        }
+
+        .go-lb table th {
+            padding: 8px 4px;
+            text-align: left;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .go-lb table td {
+            padding: 10px 4px;
+            color: #cbd5e1;
+        }
+
+        .go-lb table tbody tr:nth-child(odd) {
+            background: rgba(0, 180, 216, 0.05);
+        }
+
+        .go-lb table tbody tr:hover {
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        .go-lb table tbody tr td:first-child {
+            font-weight: 700;
+            color: #00b4d8;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                gap: 16px;
+                padding: 16px;
+            }
+
+            #economy-sidebar {
+                width: 180px;
+            }
+
+            #scenario-headline {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 960px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            #economy-sidebar {
+                width: 100%;
+                max-height: 150px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <div class="round-pill" id="round-counter">ROUND 0</div>
+            <div class="phase-pill" id="phase-label" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 0 20px rgba(139,92,246,0.4);">SETTINGS</div>
+        </div>
+        <div class="top-bar-right">
+            <div id="game-timer">00:00</div>
+            <div class="destruction-badge">DESTRUCTION: <span id="destruction-value">0</span></div>
+        </div>
+    </div>
 
-<!-- TOP BAR -->
-<div id="top-bar">
-  <div class="tb-title">Economy Collapse Speedrun</div>
-  <div class="tb-center">
-    <div class="tb-round" id="round-counter"></div>
-    <div class="tb-phase" id="phase-label"></div>
-  </div>
-  <div class="tb-right">
-    <div class="tb-timer" id="game-timer"></div>
-    <div class="tb-destruction">
-      <div class="label">Destruction</div>
-      <div class="value" id="destruction-value">0</div>
-    </div>
-  </div>
-</div>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- ECONOMY SIDEBAR -->
+        <div id="economy-sidebar">
+            <div class="eco-row" data-key="gdp" data-mode="higher-better">
+                <div class="eco-label">GDP</div>
+                <div class="eco-value"><span class="eco-number" id="val-gdp">50</span></div>
+                <div class="eco-bar"><div class="eco-bar-fill" id="bar-gdp" style="width: 50%;"></div></div>
+            </div>
+            <div class="eco-row" data-key="employment" data-mode="higher-better">
+                <div class="eco-label">EMPLOYMENT</div>
+                <div class="eco-value"><span class="eco-number" id="val-employment">50</span></div>
+                <div class="eco-bar"><div class="eco-bar-fill" id="bar-employment" style="width: 50%;"></div></div>
+            </div>
+            <div class="eco-row" data-key="inflation" data-mode="higher-worse">
+                <div class="eco-label">INFLATION</div>
+                <div class="eco-value"><span class="eco-number" id="val-inflation">50</span></div>
+                <div class="eco-bar"><div class="eco-bar-fill" id="bar-inflation" style="width: 50%;"></div></div>
+            </div>
+            <div class="eco-row" data-key="public_trust" data-mode="higher-better">
+                <div class="eco-label">TRUST</div>
+                <div class="eco-value"><span class="eco-number" id="val-public_trust">50</span></div>
+                <div class="eco-bar"><div class="eco-bar-fill" id="bar-public_trust" style="width: 50%;"></div></div>
+            </div>
+            <div class="eco-row" data-key="trade_balance" data-mode="higher-better">
+                <div class="eco-label">TRADE</div>
+                <div class="eco-value"><span class="eco-number" id="val-trade_balance">50</span></div>
+                <div class="eco-bar"><div class="eco-bar-fill" id="bar-trade_balance" style="width: 50%;"></div></div>
+            </div>
+            <div class="eco-row" data-key="national_debt" data-mode="higher-worse">
+                <div class="eco-label">DEBT</div>
+                <div class="eco-value"><span class="eco-number" id="val-national_debt">50</span></div>
+                <div class="eco-bar"><div class="eco-bar-fill" id="bar-national_debt" style="width: 50%;"></div></div>
+            </div>
+        </div>
 
-<!-- MAIN AREA -->
-<div id="main-area">
-  <div id="economy-sidebar">
-    <div class="eco-row" data-key="gdp" data-mode="higher-better">
-      <div class="eco-header"><span class="eco-label">GDP</span><span class="eco-value" id="val-gdp">75</span></div>
-      <div class="eco-track"><div class="eco-fill" id="bar-gdp" style="width:75%"></div></div>
+        <!-- CONTENT AREA -->
+        <div id="content-area">
+            <h2 id="scenario-headline">Welcome to the Game</h2>
+            <p id="scenario-description">The Parliament awaits. Make your decisions wisely...</p>
+            <div id="proposals-grid"></div>
+            <div id="copy-disclaimer">Desktop players: copy your proposal text</div>
+        </div>
     </div>
-    <div class="eco-row" data-key="employment" data-mode="higher-better">
-      <div class="eco-header"><span class="eco-label">Employment</span><span class="eco-value" id="val-employment">80</span></div>
-      <div class="eco-track"><div class="eco-fill" id="bar-employment" style="width:80%"></div></div>
-    </div>
-    <div class="eco-row" data-key="inflation" data-mode="higher-worse">
-      <div class="eco-header"><span class="eco-label">Inflation</span><span class="eco-value" id="val-inflation">20</span></div>
-      <div class="eco-track"><div class="eco-fill" id="bar-inflation" style="width:20%"></div></div>
-    </div>
-    <div class="eco-row" data-key="public_trust" data-mode="higher-better">
-      <div class="eco-header"><span class="eco-label">Trust</span><span class="eco-value" id="val-public_trust">70</span></div>
-      <div class="eco-track"><div class="eco-fill" id="bar-public_trust" style="width:70%"></div></div>
-    </div>
-    <div class="eco-row" data-key="trade_balance" data-mode="higher-better">
-      <div class="eco-header"><span class="eco-label">Trade</span><span class="eco-value" id="val-trade_balance">60</span></div>
-      <div class="eco-track"><div class="eco-fill" id="bar-trade_balance" style="width:60%"></div></div>
-    </div>
-    <div class="eco-row" data-key="national_debt" data-mode="higher-worse">
-      <div class="eco-header"><span class="eco-label">Debt</span><span class="eco-value" id="val-national_debt">30</span></div>
-      <div class="eco-track"><div class="eco-fill" id="bar-national_debt" style="width:30%"></div></div>
-    </div>
-  </div>
 
-  <div id="content-area">
-    <div id="scenario-bar">
-      <div id="scenario-headline">Waiting for game to start...</div>
-      <div id="scenario-description"></div>
+    <!-- BOTTOM STRIP -->
+    <div class="bottom-strip">
+        <div id="ticker-content">LOADING NEWS...</div>
     </div>
-    <div id="proposals-grid"></div>
-    <div id="copy-disclaimer">&#9888; Copying yields lower AI scores</div>
-  </div>
-</div>
 
-<!-- BOTTOM TICKER -->
-<div id="bottom-strip">
-  <div class="ticker-label">Breaking</div>
-  <div class="ticker-track"><div id="ticker-content">Welcome to Economy Collapse Speedrun — Parliament Edition. Scan the QR code to join!</div></div>
-</div>
+    <!-- SETTINGS OVERLAY -->
+    <div class="overlay active" id="settings-overlay">
+        <svg class="settings-background-svg" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+            <rect width="1920" height="1080" fill="#1a3a3a"/>
+            <defs><linearGradient id="woodGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#4a5d3a;stop-opacity:1" /><stop offset="100%" style="stop-color:#2d3a1f;stop-opacity:1" /></linearGradient></defs>
+            <g transform="translate(200, 400)"><rect x="0" y="60" width="50" height="70" fill="#1a5a8a" rx="4"/><circle cx="25" cy="40" r="25" fill="#f4c98b"/><path d="M 10 20 Q 25 0 40 20" fill="#8b4513" stroke="none"/><circle cx="17" cy="35" r="2.5" fill="#000"/><circle cx="33" cy="35" r="2.5" fill="#000"/><path d="M 17 45 L 33 45 Q 25 48 17 45" fill="#000" stroke="#000" stroke-width="1"/><rect x="22" y="65" width="6" height="40" fill="#dc2626"/><line x1="50" y1="90" x2="80" y2="70" stroke="#f4c98b" stroke-width="6"/><circle cx="80" cy="70" r="8" fill="#f4c98b"/></g>
+            <g transform="translate(400, 420)"><rect x="0" y="60" width="50" height="70" fill="#2d5a4a" rx="4"/><circle cx="25" cy="40" r="25" fill="#d4956b"/><path d="M 10 15 Q 25 5 40 15 Q 35 25 25 28 Q 15 25 10 15" fill="#d4956b" stroke="none"/><circle cx="17" cy="35" r="2.5" fill="#000"/><circle cx="33" cy="35" r="2.5" fill="#000"/><text x="75" y="60" font-size="24" fill="#fbbf24">Z</text><text x="85" y="75" font-size="20" fill="#fbbf24">z</text><rect x="22" y="65" width="6" height="40" fill="#4a8a6a"/></g>
+            <g transform="translate(600, 400)"><rect x="0" y="60" width="50" height="70" fill="#5a4a8a" rx="4"/><circle cx="25" cy="40" r="25" fill="#f4c98b"/><path d="M 10 20 Q 25 8 40 20" fill="#8b4513" stroke="none"/><circle cx="17" cy="35" r="2.5" fill="#000"/><circle cx="33" cy="35" r="2.5" fill="#000"/><path d="M 20 48 Q 25 45 30 48" fill="none" stroke="#000" stroke-width="1.5"/><rect x="22" y="65" width="6" height="40" fill="#6a4a2a"/><text x="60" y="35" font-size="20" fill="#fbbf24">?</text></g>
+            <g transform="translate(800, 410)"><rect x="0" y="60" width="50" height="70" fill="#5a5a5a" rx="4"/><circle cx="25" cy="40" r="25" fill="#d4956b"/><path d="M 10 20 Q 25 5 40 20" fill="#000000" stroke="none"/><circle cx="16" cy="35" r="3" fill="#fff"/><circle cx="34" cy="35" r="3" fill="#fff"/><line x1="17" y1="48" x2="33" y2="48" stroke="#000" stroke-width="2"/><rect x="22" y="65" width="6" height="40" fill="#2a4a6a"/></g>
+            <g transform="translate(950, 300)"><rect x="-40" y="100" width="80" height="150" fill="#8b6914"/><rect x="-50" y="85" width="100" height="20" fill="#b8956a" rx="2"/><rect x="-30" y="105" width="60" height="30" fill="#a67c52"/><line x1="0" y1="85" x2="0" y2="20" stroke="#2d2d2d" stroke-width="4"/><circle cx="0" cy="10" r="12" fill="#2d2d2d"/><circle cx="0" cy="10" r="9" fill="#444"/></g>
+            <g transform="translate(1200, 350)"><rect x="0" y="60" width="50" height="80" fill="#8a3a3a" rx="4"/><circle cx="25" cy="40" r="25" fill="#f4c98b"/><path d="M 8 18 Q 25 2 42 18 L 38 25 Q 25 15 12 25 Z" fill="#8b4513"/><circle cx="17" cy="32" r="3" fill="#000"/><circle cx="33" cy="32" r="3" fill="#000"/><line x1="14" y1="25" x2="20" y2="22" stroke="#000" stroke-width="1.5"/><line x1="30" y1="22" x2="36" y2="25" stroke="#000" stroke-width="1.5"/><line x1="17" y1="48" x2="33" y2="48" stroke="#000" stroke-width="1.5"/><line x1="50" y1="80" x2="90" y2="40" stroke="#f4c98b" stroke-width="7"/><circle cx="90" cy="40" r="10" fill="#f4c98b"/><circle cx="100" cy="35" r="4" fill="#f4c98b"/></g>
+            <g transform="translate(1400, 380)"><rect x="0" y="60" width="50" height="70" fill="#3a6a8a" rx="4"/><circle cx="25" cy="40" r="25" fill="#d4956b"/><path d="M 10 18 Q 25 3 40 18" fill="#8b6b4f" stroke="none"/><circle cx="17" cy="35" r="2.5" fill="#000"/><circle cx="33" cy="35" r="2.5" fill="#000"/><path d="M 17 47 Q 25 50 33 47" fill="#000"/><rect x="22" y="65" width="6" height="40" fill="#4a6a8a"/><circle cx="80" cy="50" r="8" fill="#ffffff" stroke="#000" stroke-width="1"/><line x1="60" y1="58" x2="75" y2="55" stroke="#fbbf24" stroke-width="2"/><line x1="65" y1="65" x2="78" y2="62" stroke="#fbbf24" stroke-width="2"/></g>
+            <g transform="translate(1600, 410)"><rect x="0" y="60" width="50" height="70" fill="#6a4a3a" rx="4"/><circle cx="25" cy="40" r="25" fill="#f4c98b"/><path d="M 10 20 Q 25 8 40 20" fill="#8b4513" stroke="none"/><circle cx="16" cy="36" r="3" fill="#000"/><circle cx="34" cy="36" r="3" fill="#000"/><path d="M 17 48 Q 25 52 33 48" fill="#000"/><line x1="0" y1="80" x2="-15" y2="95" stroke="#f4c98b" stroke-width="6"/><line x1="50" y1="80" x2="65" y2="95" stroke="#f4c98b" stroke-width="6"/><rect x="22" y="65" width="6" height="40" fill="#5a4a2a"/></g>
+            <rect x="100" y="100" width="1720" height="2" fill="#fbbf24" opacity="0.3"/><rect x="100" y="950" width="1720" height="2" fill="#fbbf24" opacity="0.3"/>
+        </svg>
 
-<!-- OVERLAYS -->
+        <div class="settings-content">
+            <div class="settings-title">
+                <h1>ECONOMY COLLAPSE SPEEDRUN</h1>
+                <p>PARLIAMENT EDITION</p>
+            </div>
 
-<!-- Settings -->
-<div class="overlay active" id="settings-overlay">
-  <div class="settings-title">Parliament Edition</div>
-  <div class="settings-subtitle">Economy Collapse Speedrun</div>
-  <div class="mode-toggle">
-    <button class="mode-btn active" data-mode="destructive" id="mode-destructive">Destructive<small>Collapse the economy</small></button>
-    <button class="mode-btn" data-mode="constructive" id="mode-constructive">Constructive<small>Build the best economy</small></button>
-  </div>
-  <div class="settings-grid">
-    <div class="sg-group">
-      <label>Duration</label>
-      <select id="set-duration">
-        <option value="180">3 minutes</option>
-        <option value="300" selected>5 minutes</option>
-        <option value="420">7 minutes</option>
-        <option value="600">10 minutes</option>
-      </select>
+            <div class="mode-selector">
+                <div class="mode-card" id="mode-destructive">
+                    <svg class="mode-card-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="30" y="80" width="50" height="100" fill="#8b4513" transform="rotate(-8 55 100)"/>
+                        <rect x="35" y="90" width="8" height="8" fill="#fbbf24"/><rect x="48" y="90" width="8" height="8" fill="#fbbf24"/><rect x="35" y="105" width="8" height="8" fill="#fbbf24"/><rect x="48" y="105" width="8" height="8" fill="#fbbf24"/>
+                        <path d="M 30 75 Q 25 50 35 45 Q 40 60 45 45 Q 48 65 55 75" fill="#ff6b35" opacity="0.8"/><path d="M 50 80 Q 48 55 60 50 Q 65 70 75 80" fill="#dc2626" opacity="0.8"/>
+                        <rect x="100" y="70" width="60" height="110" fill="#6b4513"/><rect x="110" y="80" width="10" height="10" fill="#fbbf24"/><rect x="130" y="80" width="10" height="10" fill="#fbbf24"/><rect x="150" y="80" width="10" height="10" fill="#fbbf24"/><rect x="110" y="105" width="10" height="10" fill="#fbbf24"/><rect x="130" y="105" width="10" height="10" fill="#fbbf24"/><rect x="150" y="105" width="10" height="10" fill="#fbbf24"/>
+                        <path d="M 95 65 Q 85 30 105 20 Q 115 50 130 20 Q 140 45 160 70" fill="#ff6b35" opacity="0.9"/>
+                        <rect x="180" y="90" width="45" height="90" fill="#5a3413"/><rect x="190" y="100" width="8" height="8" fill="#ff6b35"/><rect x="205" y="100" width="8" height="8" fill="#ff6b35"/><rect x="190" y="120" width="8" height="8" fill="#ff6b35"/><rect x="205" y="120" width="8" height="8" fill="#ff6b35"/>
+                        <path d="M 175 85 Q 165 40 185 25 Q 200 55 215 25 Q 230 50 230 85" fill="#dc2626" opacity="1"/>
+                        <g transform="translate(240, 60)"><rect x="0" y="0" width="20" height="12" fill="#22c55e" transform="rotate(30)"/><text x="2" y="8" font-size="8" fill="#000">$</text></g>
+                        <g transform="translate(260, 40)"><rect x="0" y="0" width="20" height="12" fill="#22c55e" transform="rotate(-20)"/><text x="2" y="8" font-size="8" fill="#000">$</text></g>
+                        <line x1="30" y1="150" x2="100" y2="150" stroke="#ef4444" stroke-width="2"/><line x1="30" y1="150" x2="30" y2="50" stroke="#ef4444" stroke-width="2"/><polyline points="35,140 50,130 65,145 80,120 95,135" fill="none" stroke="#ef4444" stroke-width="3"/>
+                        <circle cx="50" cy="40" r="15" fill="#666" opacity="0.5"/><circle cx="130" cy="35" r="20" fill="#555" opacity="0.5"/><circle cx="210" cy="45" r="18" fill="#666" opacity="0.5"/>
+                    </svg>
+                    <h3>DESTRUCTIVE</h3>
+                    <p>Crash the Economy!</p>
+                </div>
+
+                <div class="mode-card" id="mode-constructive">
+                    <svg class="mode-card-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="250" cy="30" r="20" fill="#fbbf24"/><line x1="250" y1="5" x2="250" y2="-5" stroke="#fbbf24" stroke-width="2"/><line x1="275" y1="30" x2="295" y2="30" stroke="#fbbf24" stroke-width="2"/><line x1="265" y1="15" x2="275" y2="5" stroke="#fbbf24" stroke-width="2"/><line x1="265" y1="45" x2="275" y2="55" stroke="#fbbf24" stroke-width="2"/>
+                        <rect x="30" y="60" width="50" height="130" fill="#4a7a9a"/><rect x="32" y="65" width="46" height="120" fill="#5a8aaa"/><rect x="38" y="72" width="8" height="8" fill="#fbbf24"/><rect x="52" y="72" width="8" height="8" fill="#fbbf24"/><rect x="38" y="88" width="8" height="8" fill="#fbbf24"/><rect x="52" y="88" width="8" height="8" fill="#fbbf24"/><rect x="38" y="104" width="8" height="8" fill="#fbbf24"/><rect x="52" y="104" width="8" height="8" fill="#fbbf24"/><rect x="38" y="120" width="8" height="8" fill="#fbbf24"/><rect x="52" y="120" width="8" height="8" fill="#fbbf24"/>
+                        <polygon points="30,60 80,60 75,50 35,50" fill="#6a9aaa"/>
+                        <rect x="100" y="45" width="55" height="145" fill="#3a6a8a"/><rect x="102" y="50" width="51" height="135" fill="#4a7a9a"/><rect x="110" y="58" width="7" height="7" fill="#fbbf24"/><rect x="125" y="58" width="7" height="7" fill="#fbbf24"/><rect x="140" y="58" width="7" height="7" fill="#fbbf24"/><rect x="110" y="72" width="7" height="7" fill="#fbbf24"/><rect x="125" y="72" width="7" height="7" fill="#fbbf24"/><rect x="140" y="72" width="7" height="7" fill="#fbbf24"/><rect x="110" y="86" width="7" height="7" fill="#fbbf24"/><rect x="125" y="86" width="7" height="7" fill="#fbbf24"/><rect x="140" y="86" width="7" height="7" fill="#fbbf24"/>
+                        <polygon points="100,45 155,45 155,35 127.5,15 100,35" fill="#5a9aaa"/>
+                        <rect x="170" y="80" width="50" height="110" fill="#5a8a4a"/><rect x="172" y="85" width="46" height="100" fill="#6a9a5a"/><rect x="178" y="92" width="8" height="8" fill="#fbbf24"/><rect x="193" y="92" width="8" height="8" fill="#fbbf24"/><rect x="178" y="108" width="8" height="8" fill="#fbbf24"/><rect x="193" y="108" width="8" height="8" fill="#fbbf24"/><rect x="178" y="124" width="8" height="8" fill="#fbbf24"/><rect x="193" y="124" width="8" height="8" fill="#fbbf24"/>
+                        <polygon points="170,80 220,80 220,72 170,72" fill="#7aaa6a"/>
+                        <ellipse cx="80" cy="160" rx="40" ry="20" fill="#10b981" opacity="0.6"/><circle cx="65" cy="150" r="8" fill="#22c55e"/><circle cx="95" cy="155" r="6" fill="#22c55e"/>
+                        <line x1="230" y1="160" x2="300" y2="160" stroke="#22c55e" stroke-width="2"/><line x1="230" y1="160" x2="230" y2="60" stroke="#22c55e" stroke-width="2"/><polyline points="235,155 250,135 265,120 280,100 295,80" fill="none" stroke="#22c55e" stroke-width="3"/>
+                        <g transform="translate(145, 165)"><rect x="0" y="0" width="18" height="20" fill="#22c55e" rx="2"/><text x="2" y="14" font-size="10" fill="#fff">$</text></g>
+                        <g transform="translate(165, 160)"><rect x="0" y="0" width="16" height="18" fill="#22c55e" rx="2"/><text x="1" y="12" font-size="9" fill="#fff">$</text></g>
+                        <g transform="translate(50, 165)"><circle cx="0" cy="0" r="4" fill="#f4c98b"/><circle cx="-2" cy="-1" r="1" fill="#000"/><circle cx="2" cy="-1" r="1" fill="#000"/><path d="M -2 1 Q 0 3 2 1" fill="#000"/></g>
+                        <g transform="translate(120, 168)"><circle cx="0" cy="0" r="4" fill="#d4956b"/><circle cx="-2" cy="-1" r="1" fill="#000"/><circle cx="2" cy="-1" r="1" fill="#000"/><path d="M -2 1 Q 0 3 2 1" fill="#000"/></g>
+                    </svg>
+                    <h3>CONSTRUCTIVE</h3>
+                    <p>Build Prosperity!</p>
+                </div>
+            </div>
+
+            <div class="settings-controls">
+                <div class="settings-row">
+                    <label for="set-duration">Game Duration (seconds)</label>
+                    <select id="set-duration">
+                        <option value="120">2 minutes (fast)</option>
+                        <option value="300" selected>5 minutes (default)</option>
+                        <option value="600">10 minutes (long)</option>
+                        <option value="900">15 minutes (epic)</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <label for="set-parliament">Parliament Members</label>
+                    <select id="set-parliament">
+                        <option value="2">2 members</option>
+                        <option value="3">3 members</option>
+                        <option value="4" selected>4 members</option>
+                        <option value="5">5 members</option>
+                        <option value="6">6 members</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <label for="set-proposal-time">Proposal Time (seconds)</label>
+                    <select id="set-proposal-time">
+                        <option value="15">15 seconds</option>
+                        <option value="20">20 seconds</option>
+                        <option value="30" selected>30 seconds</option>
+                        <option value="45">45 seconds</option>
+                        <option value="60">60 seconds</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <label for="set-voting-time">Voting Time (seconds)</label>
+                    <select id="set-voting-time">
+                        <option value="10">10 seconds</option>
+                        <option value="15">15 seconds</option>
+                        <option value="20" selected>20 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="45">45 seconds</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <label for="set-anonymous">Member Names Visible</label>
+                    <select id="set-anonymous">
+                        <option value="true">No (anonymous)</option>
+                        <option value="false" selected>Yes (visible)</option>
+                    </select>
+                </div>
+                <button class="settings-continue-btn" id="settings-continue-btn">CONTINUE</button>
+            </div>
+        </div>
     </div>
-    <div class="sg-group">
-      <label>Parliament Size</label>
-      <select id="set-parliament">
-        <option value="3">3 members</option>
-        <option value="4" selected>4 members</option>
-        <option value="5">5 members</option>
-      </select>
+
+    <!-- LOBBY OVERLAY -->
+    <div class="overlay" id="lobby-overlay">
+        <div class="lobby-card">
+            <div class="qr-section">
+                <img id="qr-img" src="" alt="QR Code">
+                <div class="qr-label">SCAN TO JOIN</div>
+            </div>
+            <div class="player-info">
+                <div id="lobby-count">0</div>
+                <div class="player-label">Players Connected</div>
+                <div id="lobby-players"></div>
+                <button id="start-btn" disabled>Waiting for players...</button>
+                <div id="min-note">Minimum 2 players required</div>
+            </div>
+        </div>
     </div>
-    <div class="sg-group">
-      <label>Proposal Time</label>
-      <select id="set-proposal-time">
-        <option value="20">20 seconds</option>
-        <option value="30" selected>30 seconds</option>
-        <option value="40">40 seconds</option>
-      </select>
+
+    <!-- LOADING OVERLAY -->
+    <div class="overlay" id="loading-overlay">
+        <div class="loader"></div>
+        <div id="loading-message">Loading...</div>
     </div>
-    <div class="sg-group">
-      <label>Voting Time</label>
-      <select id="set-voting-time">
-        <option value="15">15 seconds</option>
-        <option value="20" selected>20 seconds</option>
-        <option value="25">25 seconds</option>
-      </select>
+
+    <!-- ROLE REVEAL OVERLAY -->
+    <div class="overlay" id="role-reveal-overlay">
+        <div class="reveal-card">
+            <div class="reveal-headline">Parliament Has Been Chosen!</div>
+            <div id="reveal-parliament"></div>
+            <div id="reveal-people-note"></div>
+        </div>
     </div>
-    <div class="sg-group" style="grid-column:span 2">
-      <label>Names</label>
-      <select id="set-anonymous">
-        <option value="true">Anonymous</option>
-        <option value="false">Revealed</option>
-      </select>
+
+    <!-- RESULTS OVERLAY -->
+    <div class="overlay" id="results-overlay">
+        <div class="results-container">
+            <div id="results-title">Round 0 Results</div>
+            <div class="results-chart-card">
+                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">Vote Distribution</div>
+                <div id="results-vote-chart"></div>
+                <div id="results-wp-text" style="margin-top: 12px;"></div>
+            </div>
+            <div class="results-changes-card">
+                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">Economy Impact</div>
+                <div id="results-changes"></div>
+            </div>
+        </div>
     </div>
-  </div>
-  <button class="btn-continue" id="settings-continue-btn">Continue to Lobby</button>
-</div>
 
-<!-- Lobby -->
-<div class="overlay" id="lobby-overlay">
-  <div class="lobby-title">Economy Collapse<br>Speedrun</div>
-  <div class="lobby-subtitle">Scan to Join</div>
-  <div class="qr-box"><img id="qr-img" alt="QR Code" src="" /></div>
-  <div class="lobby-count">Players: <span id="lobby-count">0</span></div>
-  <div class="lobby-chips" id="lobby-players"></div>
-  <button class="btn-start" id="start-btn" disabled>Waiting for players...</button>
-  <div class="lobby-note" id="min-note"></div>
-</div>
+    <!-- GAME OVER OVERLAY -->
+    <div class="overlay" id="gameover-overlay">
+        <div class="gameover-container">
+            <div id="go-title">GAME OVER</div>
+            <div id="go-narrative"></div>
+            <div class="go-section-title">AI Analysis</div>
+            <div id="go-ai-reveal"></div>
+            <div class="go-section-title">Awards</div>
+            <div id="go-awards"></div>
+            <div class="go-section-title">Leaderboards</div>
+            <div id="go-leaderboards"></div>
+        </div>
+    </div>
 
-<!-- Loading -->
-<div class="overlay" id="loading-overlay">
-  <div class="ld-spinner"></div>
-  <div class="ld-message" id="loading-message">Loading...</div>
-</div>
-
-<!-- Role Reveal -->
-<div class="overlay" id="role-reveal-overlay">
-  <div class="reveal-title">Parliament Has Been Elected!</div>
-  <div class="reveal-list" id="reveal-parliament"></div>
-  <div class="reveal-note" id="reveal-people-note"></div>
-</div>
-
-<!-- Results -->
-<div class="overlay" id="results-overlay">
-  <div class="results-title" id="results-title">Round Results</div>
-  <div class="vote-chart" id="results-vote-chart"></div>
-  <div class="wp-box"><div class="wp-label">Winning Policy</div><div class="wp-text" id="results-wp-text"></div></div>
-  <div class="eco-changes" id="results-changes"></div>
-</div>
-
-<!-- Game Over -->
-<div class="overlay" id="gameover-overlay">
-  <div class="go-title" id="go-title"></div>
-  <div class="go-narrative" id="go-narrative"></div>
-  <div class="go-section">AI Reveal — Hidden Scores</div>
-  <div id="go-ai-reveal"></div>
-  <div class="go-section">Awards</div>
-  <div class="go-awards" id="go-awards"></div>
-  <div class="go-section">Leaderboards</div>
-  <div class="go-lbs" id="go-leaderboards"></div>
-</div>
-
-<script>
+    <script>
 (function() {
   'use strict';
-
   let currentPhase = 'settings';
   let ws = null;
   let settings = {mode:'destructive', duration_seconds:300, parliament_size:4, anonymous:true, proposal_time:30, voting_time:20};
   let parliamentNames = [];
-
   const $ = id => document.getElementById(id);
-
   const overlays = ['settings-overlay','lobby-overlay','loading-overlay','role-reveal-overlay','results-overlay','gameover-overlay'];
-  function showOverlay(id) {
-    overlays.forEach(o => $(o).classList.remove('active'));
-    if (id) $(id).classList.add('active');
-  }
-
-  function formatTime(s) {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-  }
-
-  function getBarColor(value, mode) {
-    if (mode === 'higher-worse') return value >= 60 ? '#ef4444' : value >= 30 ? '#f59e0b' : '#10b981';
-    return value >= 60 ? '#10b981' : value >= 30 ? '#f59e0b' : '#ef4444';
-  }
-
-  function updateIndicator(key, value) {
-    const ind = document.querySelector(`.eco-row[data-key="${key}"]`);
-    if (!ind) return;
-    const color = getBarColor(value, ind.dataset.mode);
-    const valEl = $('val-' + key);
-    const barEl = $('bar-' + key);
-    if (valEl) { valEl.textContent = value; valEl.style.color = color; }
-    if (barEl) { barEl.style.width = value + '%'; barEl.style.backgroundColor = color; }
-  }
-
-  function updateEconomy(eco) {
-    if (!eco) return;
-    ['gdp','employment','inflation','public_trust','trade_balance','national_debt'].forEach(k => {
-      if (eco[k] !== undefined) updateIndicator(k, eco[k]);
-    });
-  }
-
-  function setTicker(items) {
-    if (!items || !items.length) return;
-    const text = items.join('  \u2022  ');
-    $('ticker-content').textContent = text + '  \u2022  ' + text;
-  }
-
+  function showOverlay(id) { overlays.forEach(o => $(o).classList.remove('active')); if (id) $(id).classList.add('active'); }
+  function formatTime(s) { const m = Math.floor(s / 60); const sec = s % 60; return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0'); }
+  function getBarColor(value, mode) { if (mode === 'higher-worse') return value >= 60 ? '#ef4444' : value >= 30 ? '#f59e0b' : '#22c55e'; return value >= 60 ? '#22c55e' : value >= 30 ? '#f59e0b' : '#ef4444'; }
+  function updateIndicator(key, value) { const ind = document.querySelector(`.eco-row[data-key="${key}"]`); if (!ind) return; const color = getBarColor(value, ind.dataset.mode); const valEl = $('val-' + key); const barEl = $('bar-' + key); if (valEl) { valEl.textContent = value; valEl.style.color = color; } if (barEl) { barEl.style.width = value + '%'; barEl.style.backgroundColor = color; } }
+  function updateEconomy(eco) { if (!eco) return; ['gdp','employment','inflation','public_trust','trade_balance','national_debt'].forEach(k => { if (eco[k] !== undefined) updateIndicator(k, eco[k]); }); }
+  function setTicker(items) { if (!items || !items.length) return; const text = items.join('  • '); $('ticker-content').textContent = text + '  • ' + text; }
   function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-  // ===== SETTINGS =====
-  $('mode-destructive').addEventListener('click', () => {
-    $('mode-destructive').classList.add('active');
-    $('mode-constructive').classList.remove('active');
-    settings.mode = 'destructive';
-    $('set-anonymous').value = 'true';
-  });
-  $('mode-constructive').addEventListener('click', () => {
-    $('mode-constructive').classList.add('active');
-    $('mode-destructive').classList.remove('active');
-    settings.mode = 'constructive';
-    $('set-anonymous').value = 'false';
-  });
-
-  $('settings-continue-btn').addEventListener('click', () => {
-    settings.duration_seconds = parseInt($('set-duration').value);
-    settings.parliament_size = parseInt($('set-parliament').value);
-    settings.proposal_time = parseInt($('set-proposal-time').value);
-    settings.voting_time = parseInt($('set-voting-time').value);
-    settings.anonymous = $('set-anonymous').value === 'true';
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({action: 'update_settings', settings: settings}));
-    }
-    showOverlay('lobby-overlay');
-    currentPhase = 'lobby';
-  });
-
-  // ===== LOBBY =====
-  function updateLobby(data) {
-    $('lobby-count').textContent = data.player_count || 0;
-    const list = $('lobby-players');
-    list.innerHTML = '';
-    (data.players || []).forEach(name => {
-      const chip = document.createElement('div');
-      chip.className = 'lobby-chip';
-      chip.textContent = name;
-      list.appendChild(chip);
-    });
-    const min = data.min_players || 2;
-    const btn = $('start-btn');
-    if (data.player_count >= min) {
-      btn.disabled = false;
-      btn.textContent = 'Start Game';
-    } else {
-      btn.disabled = true;
-      btn.textContent = `Waiting for players... (${data.player_count}/${min})`;
-    }
-    $('min-note').textContent = `Minimum ${min} players required`;
-  }
-
-  $('start-btn').addEventListener('click', async () => {
-    const btn = $('start-btn');
-    if (btn.disabled) return;
-    btn.disabled = true;
-    btn.textContent = 'Starting...';
-    try {
-      const res = await fetch('/start', {method:'POST'});
-      const json = await res.json();
-      if (json.error) {
-        btn.disabled = false;
-        btn.textContent = json.error;
-        setTimeout(() => { btn.textContent = 'Start Game'; btn.disabled = false; }, 2000);
-      }
-    } catch(e) {
-      btn.disabled = false;
-      btn.textContent = 'Error — Try Again';
-      setTimeout(() => { btn.textContent = 'Start Game'; btn.disabled = false; }, 2000);
-    }
-  });
-
-  // ===== PROPOSALS =====
-  function renderProposals(count, names) {
-    parliamentNames = names || [];
-    const grid = $('proposals-grid');
-    grid.innerHTML = '';
-    for (let i = 0; i < count; i++) {
-      const card = document.createElement('div');
-      card.className = 'prop-card';
-      card.id = 'proposal-' + i;
-      card.innerHTML = `
-        <div class="prop-header">
-          <span class="prop-name">${escapeHtml(names[i] || 'Proposal ' + (i+1))}</span>
-          <span class="prop-votes" id="pvotes-${i}"></span>
-        </div>
-        <div class="prop-text" id="ptext-${i}"><span class="cursor"></span></div>
-        <div class="prop-votebar" id="pvbar-${i}">
-          <div class="prop-votebar-track"><div class="prop-votebar-fill" id="pvfill-${i}"></div></div>
-          <div class="prop-votebar-count" id="pvcount-${i}">0</div>
-        </div>
-      `;
-      grid.appendChild(card);
-    }
-  }
-
-  function updateProposalText(idx, text) {
-    const el = $('ptext-' + idx);
-    if (el) el.innerHTML = escapeHtml(text) + '<span class="cursor"></span>';
-  }
-
-  function showVoteBars(voteCounts, totalPeople) {
-    const max = Math.max(1, totalPeople || 1);
-    for (const [idx, count] of Object.entries(voteCounts)) {
-      const bar = $('pvbar-' + idx);
-      const fill = $('pvfill-' + idx);
-      const countEl = $('pvcount-' + idx);
-      const votesEl = $('pvotes-' + idx);
-      if (bar) bar.style.display = 'block';
-      if (fill) fill.style.width = (count / max * 100) + '%';
-      if (countEl) countEl.textContent = count;
-      if (votesEl) { votesEl.textContent = count + ' votes'; votesEl.style.display = 'inline'; }
-    }
-  }
-
-  function finalizeProposals(proposals) {
-    proposals.forEach(p => {
-      const el = $('ptext-' + p.index);
-      if (el) el.innerHTML = escapeHtml(p.text || '(no proposal)');
-    });
-  }
-
-  // ===== RESULTS =====
-  function showRoundResults(data) {
-    $('results-title').textContent = 'Round ' + data.round + ' Results';
-
-    const chart = $('results-vote-chart');
-    chart.innerHTML = '';
-    const counts = data.vote_counts || {};
-    const maxVote = Math.max(1, ...Object.values(counts));
-    const winIdx = data.winning_index;
-
-    Object.entries(counts).forEach(([idx, count]) => {
-      const pct = (count / maxVote) * 100;
-      const isWin = parseInt(idx) === winIdx;
-      const name = parliamentNames[parseInt(idx)] || 'P' + (parseInt(idx)+1);
-      const col = document.createElement('div');
-      col.className = 'vc-col';
-      col.innerHTML = `
-        <div class="vc-count">${count}</div>
-        <div class="vc-bar-wrap"><div class="vc-bar-inner ${isWin?'winner':''}" style="height:${pct}%"></div></div>
-        <div class="vc-label">${escapeHtml(name)}${isWin?' \u2605':''}</div>
-      `;
-      chart.appendChild(col);
-    });
-
-    $('results-wp-text').textContent = data.winning_text || 'No policy';
-
-    const changes = $('results-changes');
-    changes.innerHTML = '';
-    const keys = ['gdp','employment','inflation','public_trust','trade_balance','national_debt'];
-    const labels = {gdp:'GDP',employment:'EMP',inflation:'INF',public_trust:'TRUST',trade_balance:'TRADE',national_debt:'DEBT'};
-    keys.forEach(k => {
-      const oldV = (data.old_economy||{})[k];
-      const newV = (data.new_economy||{})[k];
-      if (oldV === undefined || newV === undefined) return;
-      const diff = newV - oldV;
-      let cls = 'same';
-      if (k === 'inflation' || k === 'national_debt') {
-        cls = diff > 0 ? 'down' : diff < 0 ? 'up' : 'same';
-      } else {
-        cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
-      }
-      const item = document.createElement('div');
-      item.className = 'ec-item';
-      item.innerHTML = `<span class="ec-label">${labels[k]}</span><span class="ec-old">${oldV}</span><span class="ec-arrow">\u2192</span><span class="ec-new ${cls}">${newV}</span>`;
-      changes.appendChild(item);
-    });
-
-    updateEconomy(data.new_economy);
-    if (data.destruction_score !== undefined) $('destruction-value').textContent = data.destruction_score;
-    showOverlay('results-overlay');
-  }
-
-  // ===== GAME OVER =====
-  function showGameOver(data) {
-    const titleEl = $('go-title');
-    if (data.collapsed) {
-      titleEl.textContent = data.mode === 'destructive' ? 'Economy Collapsed!' : 'Economy Collapsed...';
-      titleEl.className = 'go-title collapsed';
-    } else {
-      titleEl.textContent = data.mode === 'constructive' ? 'Economy Thrived!' : 'Economy Survived';
-      titleEl.className = 'go-title survived';
-    }
-
-    $('go-narrative').textContent = data.narrative || '';
-
-    const revealEl = $('go-ai-reveal');
-    revealEl.innerHTML = '';
-    (data.ai_reveal || []).forEach(round => {
-      const card = document.createElement('div');
-      card.className = 'air-round';
-      let html = `<div class="air-round-label">Round ${round.round} — ${escapeHtml(round.scenario_headline || '')}</div>`;
-      (round.proposals || []).forEach(p => {
-        const score = p.ai_quality_score || 0;
-        const scoreCls = score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low';
-        html += `<div class="air-prop">
-          <div class="air-score ${scoreCls}">${score}</div>
-          <div class="air-details">
-            ${p.won ? '<div class="air-winner">\u2605 Winner</div>' : ''}
-            <div class="air-text">${escapeHtml(p.text || '(empty)')}</div>
-            <div class="air-comment">"${escapeHtml(p.ai_commentary || '')}"</div>
-            <div class="air-votes">${p.votes_received} vote${p.votes_received !== 1 ? 's' : ''} — ${escapeHtml(p.display_name || '')}</div>
-          </div>
-        </div>`;
-      });
-      card.innerHTML = html;
-      revealEl.appendChild(card);
-    });
-
-    const awardsEl = $('go-awards');
-    awardsEl.innerHTML = '';
-    const awards = data.awards || {};
-    const awardDefs = {
-      supreme_dictator: {icon: '\uD83D\uDC51', title: 'Supreme Dictator'},
-      president: {icon: '\uD83C\uDFC6', title: 'President'},
-      minister_of_chaos: {icon: '\uD83D\uDD25', title: 'Minister of Chaos'},
-      chief_advisor: {icon: '\uD83C\uDFC5', title: 'Chief Advisor'},
-      whistleblower: {icon: '\uD83D\uDCE2', title: 'The Whistleblower'},
-    };
-    Object.entries(awards).forEach(([key, val]) => {
-      const def = awardDefs[key] || {icon: '\uD83C\uDFC6', title: key};
-      const card = document.createElement('div');
-      card.className = 'award-card';
-      card.innerHTML = `<div class="aw-icon">${def.icon}</div><div class="aw-title">${def.title}</div><div class="aw-name">${escapeHtml(val.name || '')}</div><div class="aw-detail">${val.votes !== undefined ? val.votes + ' votes' : val.score !== undefined ? val.score + ' pts' : ''}</div>`;
-      awardsEl.appendChild(card);
-    });
-
-    const lbEl = $('go-leaderboards');
-    lbEl.innerHTML = '';
-
-    if (data.parliament_leaderboard && data.parliament_leaderboard.length) {
-      const div = document.createElement('div');
-      div.className = 'go-lb';
-      let html = '<div class="lb-title">Parliament</div><table><thead><tr><th>#</th><th>Name</th><th>Votes</th></tr></thead><tbody>';
-      data.parliament_leaderboard.forEach((e, i) => {
-        html += `<tr><td>${i+1}</td><td>${escapeHtml(e.name)}</td><td>${e.votes_received}</td></tr>`;
-      });
-      html += '</tbody></table>';
-      div.innerHTML = html;
-      lbEl.appendChild(div);
-    }
-
-    if (data.people_leaderboard && data.people_leaderboard.length) {
-      const div = document.createElement('div');
-      div.className = 'go-lb';
-      let html = '<div class="lb-title">The People</div><table><thead><tr><th>#</th><th>Name</th><th>Score</th></tr></thead><tbody>';
-      data.people_leaderboard.forEach((e, i) => {
-        html += `<tr><td>${i+1}</td><td>${escapeHtml(e.name)}</td><td>${e.score}</td></tr>`;
-      });
-      html += '</tbody></table>';
-      div.innerHTML = html;
-      lbEl.appendChild(div);
-    }
-
-    showOverlay('gameover-overlay');
-    currentPhase = 'gameover';
-  }
-
-  // ===== WEBSOCKET =====
-  function connect() {
-    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws = new WebSocket(`${protocol}//${location.host}/ws/host`);
-    ws.onopen = () => {
-      console.log('[WS] Host connected');
-      $('qr-img').src = '/qr';
-    };
-    ws.onmessage = (event) => {
-      let msg;
-      try { msg = JSON.parse(event.data); } catch(e) { return; }
-      handleMessage(msg);
-    };
-    ws.onclose = () => {
-      console.log('[WS] Disconnected — reconnecting...');
-      setTimeout(connect, 2000);
-    };
-  }
-
-  function handleMessage(msg) {
-    switch(msg.type) {
-      case 'lobby_update':
-        updateLobby(msg);
-        break;
-
-      case 'qr_url':
-        break;
-
-      case 'settings_update':
-        settings = msg.settings || settings;
-        break;
-
-      case 'loading':
-        $('loading-message').textContent = msg.message || 'Loading...';
-        showOverlay('loading-overlay');
-        break;
-
-      case 'role_reveal':
-        const revealList = $('reveal-parliament');
-        revealList.innerHTML = '';
-        (msg.parliament || []).forEach(p => {
-          const chip = document.createElement('div');
-          chip.className = 'reveal-chip';
-          chip.textContent = p.display_name || p.name;
-          revealList.appendChild(chip);
-        });
-        $('reveal-people-note').textContent = `Everyone else (${msg.people_count} players) is The People`;
-        showOverlay('role-reveal-overlay');
-        break;
-
-      case 'writing_phase':
-        currentPhase = 'writing';
-        showOverlay(null);
-        $('round-counter').textContent = 'ROUND ' + (msg.round || 0);
-        $('phase-label').textContent = 'WRITING';
-        updateEconomy(msg.economy);
-        if (msg.destruction_score !== undefined) $('destruction-value').textContent = msg.destruction_score;
-        if (msg.time_remaining !== undefined) { $('game-timer').textContent = formatTime(msg.time_remaining); updateTimerStyle(msg.time_remaining); }
-        if (msg.scenario) {
-          $('scenario-headline').textContent = msg.scenario.headline || '';
-          $('scenario-description').textContent = msg.scenario.description || '';
-          if (msg.scenario.news_ticker) setTicker(msg.scenario.news_ticker);
-        }
-        renderProposals(msg.parliament_names ? msg.parliament_names.length : settings.parliament_size, msg.parliament_names || []);
-        $('copy-disclaimer').style.display = 'block';
-        break;
-
-      case 'proposal_keystroke':
-        updateProposalText(msg.parliament_index, msg.text || '');
-        break;
-
-      case 'voting_phase':
-        currentPhase = 'voting';
-        $('phase-label').textContent = 'VOTING';
-        $('copy-disclaimer').style.display = 'none';
-        if (msg.proposals_final) finalizeProposals(msg.proposals_final);
-        const initCounts = {};
-        for (let i = 0; i < (msg.proposal_count || 0); i++) initCounts[i] = 0;
-        showVoteBars(initCounts, 1);
-        break;
-
-      case 'vote_update':
-        showVoteBars(msg.vote_counts || {}, msg.total_people || 1);
-        break;
-
-      case 'tiebreaker':
-        currentPhase = 'tiebreaker';
-        $('phase-label').textContent = 'TIEBREAKER';
-        (msg.tied_indices || []).forEach(idx => {
-          const card = $('proposal-' + idx);
-          if (card) card.style.borderColor = '#ef4444';
-        });
-        break;
-
-      case 'tiebreaker_update':
-        if (msg.vote_counts) showVoteBars(msg.vote_counts, 1);
-        break;
-
-      case 'round_end':
-        currentPhase = 'results';
-        $('phase-label').textContent = 'RESULTS';
-        showRoundResults(msg);
-        break;
-
-      case 'timer':
-        if (msg.game_remaining !== undefined) {
-          $('game-timer').textContent = formatTime(msg.game_remaining);
-          updateTimerStyle(msg.game_remaining);
-        }
-        break;
-
-      case 'game_over':
-        showGameOver(msg);
-        break;
-    }
-  }
-
-  function updateTimerStyle(remaining) {
-    const el = $('game-timer');
-    el.classList.remove('warning','critical');
-    if (remaining <= 30) el.classList.add('critical');
-    else if (remaining <= 60) el.classList.add('warning');
-  }
-
+  $('mode-destructive').addEventListener('click', () => { $('mode-destructive').classList.add('active'); $('mode-constructive').classList.remove('active'); settings.mode = 'destructive'; $('set-anonymous').value = 'true'; });
+  $('mode-constructive').addEventListener('click', () => { $('mode-constructive').classList.add('active'); $('mode-destructive').classList.remove('active'); settings.mode = 'constructive'; $('set-anonymous').value = 'false'; });
+  $('settings-continue-btn').addEventListener('click', () => { settings.duration_seconds = parseInt($('set-duration').value); settings.parliament_size = parseInt($('set-parliament').value); settings.proposal_time = parseInt($('set-proposal-time').value); settings.voting_time = parseInt($('set-voting-time').value); settings.anonymous = $('set-anonymous').value === 'true'; if (ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({action: 'update_settings', settings: settings})); } showOverlay('lobby-overlay'); currentPhase = 'lobby'; });
+  function updateLobby(data) { $('lobby-count').textContent = data.player_count || 0; const list = $('lobby-players'); list.innerHTML = ''; (data.players || []).forEach(name => { const chip = document.createElement('div'); chip.className = 'lobby-chip'; chip.textContent = name; list.appendChild(chip); }); const min = data.min_players || 2; const btn = $('start-btn'); if (data.player_count >= min) { btn.disabled = false; btn.textContent = 'START GAME'; } else { btn.disabled = true; btn.textContent = `Waiting for players... (${data.player_count}/${min})`; } $('min-note').textContent = `Minimum ${min} players required`; }
+  $('start-btn').addEventListener('click', async () => { const btn = $('start-btn'); if (btn.disabled) return; btn.disabled = true; btn.textContent = 'Starting...'; try { const res = await fetch('/start', {method:'POST'}); const json = await res.json(); if (json.error) { btn.disabled = false; btn.textContent = json.error; setTimeout(() => { btn.textContent = 'START GAME'; btn.disabled = false; }, 2000); } } catch(e) { btn.disabled = false; btn.textContent = 'Error — Try Again'; setTimeout(() => { btn.textContent = 'START GAME'; btn.disabled = false; }, 2000); } });
+  function renderProposals(count, names) { parliamentNames = names || []; const grid = $('proposals-grid'); grid.innerHTML = ''; for (let i = 0; i < count; i++) { const card = document.createElement('div'); card.className = 'prop-card'; card.id = 'proposal-' + i; card.innerHTML = `<div class="prop-header"><span class="prop-name">${escapeHtml(names[i] || 'Proposal ' + (i+1))}</span><span class="prop-votes" id="pvotes-${i}"></span></div><div class="prop-text" id="ptext-${i}"><span class="cursor"></span></div><div class="prop-votebar" id="pvbar-${i}"><div class="prop-votebar-track"><div class="prop-votebar-fill" id="pvfill-${i}"></div></div><div class="prop-votebar-count" id="pvcount-${i}">0</div></div>`; grid.appendChild(card); } }
+  function updateProposalText(idx, text) { const el = $('ptext-' + idx); if (el) el.innerHTML = escapeHtml(text) + '<span class="cursor"></span>'; }
+  function showVoteBars(voteCounts, totalPeople) { const max = Math.max(1, totalPeople || 1); for (const [idx, count] of Object.entries(voteCounts)) { const bar = $('pvbar-' + idx); const fill = $('pvfill-' + idx); const countEl = $('pvcount-' + idx); const votesEl = $('pvotes-' + idx); if (bar) bar.style.display = 'block'; if (fill) fill.style.width = (count / max * 100) + '%'; if (countEl) countEl.textContent = count; if (votesEl) { votesEl.textContent = count + ' votes'; votesEl.style.display = 'inline'; } } }
+  function finalizeProposals(proposals) { proposals.forEach(p => { const el = $('ptext-' + p.index); if (el) el.innerHTML = escapeHtml(p.text || '(no proposal)'); }); }
+  function showRoundResults(data) { $('results-title').textContent = 'Round ' + data.round + ' Results'; const chart = $('results-vote-chart'); chart.innerHTML = ''; const counts = data.vote_counts || {}; const maxVote = Math.max(1, ...Object.values(counts)); const winIdx = data.winning_index; Object.entries(counts).forEach(([idx, count]) => { const pct = (count / maxVote) * 100; const isWin = parseInt(idx) === winIdx; const name = parliamentNames[parseInt(idx)] || 'P' + (parseInt(idx)+1); const col = document.createElement('div'); col.className = 'vc-col'; col.innerHTML = `<div class="vc-count">${count}</div><div class="vc-bar-wrap"><div class="vc-bar-inner ${isWin?'winner':''}" style="height:${pct}%"></div></div><div class="vc-label">${escapeHtml(name)}${isWin?' ★':''}</div>`; chart.appendChild(col); }); $('results-wp-text').textContent = data.winning_text || 'No policy'; const changes = $('results-changes'); changes.innerHTML = ''; const keys = ['gdp','employment','inflation','public_trust','trade_balance','national_debt']; const labels = {gdp:'GDP',employment:'EMP',inflation:'INF',public_trust:'TRUST',trade_balance:'TRADE',national_debt:'DEBT'}; keys.forEach(k => { const oldV = (data.old_economy||{})[k]; const newV = (data.new_economy||{})[k]; if (oldV === undefined || newV === undefined) return; const diff = newV - oldV; let cls = 'same'; if (k === 'inflation' || k === 'national_debt') { cls = diff > 0 ? 'down' : diff < 0 ? 'up' : 'same'; } else { cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same'; } const item = document.createElement('div'); item.className = 'ec-item'; item.innerHTML = `<span class="ec-label">${labels[k]}</span><span class="ec-old">${oldV}</span><span class="ec-arrow">→</span><span class="ec-new ${cls}">${newV}</span>`; changes.appendChild(item); }); updateEconomy(data.new_economy); if (data.destruction_score !== undefined) $('destruction-value').textContent = data.destruction_score; showOverlay('results-overlay'); }
+  function showGameOver(data) { const titleEl = $('go-title'); if (data.collapsed) { titleEl.textContent = data.mode === 'destructive' ? 'ECONOMY COLLAPSED!' : 'Economy Collapsed...'; titleEl.className = 'go-title collapsed'; } else { titleEl.textContent = data.mode === 'constructive' ? 'ECONOMY THRIVED!' : 'Economy Survived'; titleEl.className = 'go-title survived'; } $('go-narrative').textContent = data.narrative || ''; const revealEl = $('go-ai-reveal'); revealEl.innerHTML = ''; (data.ai_reveal || []).forEach(round => { const card = document.createElement('div'); card.className = 'air-round'; let html = `<div class="air-round-label">Round ${round.round} — ${escapeHtml(round.scenario_headline || '')}</div>`; (round.proposals || []).forEach(p => { const score = p.ai_quality_score || 0; const scoreCls = score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low'; html += `<div class="air-prop"><div class="air-score ${scoreCls}">${score}</div><div class="air-details">${p.won ? '<div class="air-winner">★ Winner</div>' : ''}<div class="air-text">${escapeHtml(p.text || '(empty)')}</div><div class="air-comment">"${escapeHtml(p.ai_commentary || '')}"</div><div class="air-votes">${p.votes_received} vote${p.votes_received !== 1 ? 's' : ''} — ${escapeHtml(p.display_name || '')}</div></div></div>`; }); card.innerHTML = html; revealEl.appendChild(card); }); const awardsEl = $('go-awards'); awardsEl.innerHTML = ''; const awards = data.awards || {}; const awardDefs = { supreme_dictator: {icon: '👑', title: 'Supreme Dictator'}, president: {icon: '🏆', title: 'President'}, minister_of_chaos: {icon: '🔥', title: 'Minister of Chaos'}, chief_advisor: {icon: '🥅', title: 'Chief Advisor'}, whistleblower: {icon: '📢', title: 'The Whistleblower'}, }; Object.entries(awards).forEach(([key, val]) => { const def = awardDefs[key] || {icon: '🏆', title: key}; const card = document.createElement('div'); card.className = 'award-card'; card.innerHTML = `<div class="aw-icon">${def.icon}</div><div class="aw-title">${def.title}</div><div class="aw-name">${escapeHtml(val.name || '')}</div><div class="aw-detail">${val.votes !== undefined ? val.votes + ' votes' : val.score !== undefined ? val.score + ' pts' : ''}</div>`; awardsEl.appendChild(card); }); const lbEl = $('go-leaderboards'); lbEl.innerHTML = ''; if (data.parliament_leaderboard && data.parliament_leaderboard.length) { const div = document.createElement('div'); div.className = 'go-lb'; let html = '<div class="lb-title">Parliament</div><table><thead><tr><th>#</th><th>Name</th><th>Votes</th></tr></thead><tbody>'; data.parliament_leaderboard.forEach((e, i) => { html += `<tr><td>${i+1}</td><td>${escapeHtml(e.name)}</td><td>${e.votes_received}</td></tr>`; }); html += '</tbody></table>'; div.innerHTML = html; lbEl.appendChild(div); } if (data.people_leaderboard && data.people_leaderboard.length) { const div = document.createElement('div'); div.className = 'go-lb'; let html = '<div class="lb-title">The People</div><table><thead><tr><th>#</th><th>Name</th><th>Score</th></tr></thead><tbody>'; data.people_leaderboard.forEach((e, i) => { html += `<tr><td>${i+1}</td><td>${escapeHtml(e.name)}</td><td>${e.score}</td></tr>`; }); html += '</tbody></table>'; div.innerHTML = html; lbEl.appendChild(div); } showOverlay('gameover-overlay'); currentPhase = 'gameover'; }
+  function connect() { const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'; ws = new WebSocket(`${protocol}//${location.host}/ws/host`); ws.onopen = () => { console.log('[WS] Host connected'); $('qr-img').src = '/qr'; }; ws.onmessage = (event) => { let msg; try { msg = JSON.parse(event.data); } catch(e) { return; } handleMessage(msg); }; ws.onclose = () => { console.log('[WS] Disconnected — reconnecting...'); setTimeout(connect, 2000); }; }
+  function handleMessage(msg) { switch(msg.type) { case 'lobby_update': updateLobby(msg); break; case 'qr_url': break; case 'settings_update': settings = msg.settings || settings; break; case 'loading': $('loading-message').textContent = msg.message || 'Loading...'; showOverlay('loading-overlay'); break; case 'role_reveal': const revealList = $('reveal-parliament'); revealList.innerHTML = ''; (msg.parliament || []).forEach(p => { const chip = document.createElement('div'); chip.className = 'reveal-chip'; chip.textContent = p.display_name || p.name; revealList.appendChild(chip); }); $('reveal-people-note').textContent = `Everyone else (${msg.people_count} players) is The People`; showOverlay('role-reveal-overlay'); break; case 'writing_phase': currentPhase = 'writing'; showOverlay(null); $('round-counter').textContent = 'ROUND ' + (msg.round || 0); const writeLabel = $('phase-label'); writeLabel.textContent = 'WRITING'; writeLabel.style.background = 'linear-gradient(135deg, #8b5cf6, #6d28d9)'; writeLabel.style.boxShadow = '0 0 20px rgba(139,92,246,0.4)'; updateEconomy(msg.economy); if (msg.destruction_score !== undefined) $('destruction-value').textContent = msg.destruction_score; if (msg.time_remaining !== undefined) { $('game-timer').textContent = formatTime(msg.time_remaining); updateTimerStyle(msg.time_remaining); } if (msg.scenario) { $('scenario-headline').textContent = msg.scenario.headline || ''; $('scenario-description').textContent = msg.scenario.description || ''; if (msg.scenario.news_ticker) setTicker(msg.scenario.news_ticker); } renderProposals(msg.parliament_names ? msg.parliament_names.length : settings.parliament_size, msg.parliament_names || []); $('copy-disclaimer').style.display = 'block'; break; case 'proposal_keystroke': updateProposalText(msg.parliament_index, msg.text || ''); break; case 'voting_phase': currentPhase = 'voting'; const voteLabel = $('phase-label'); voteLabel.textContent = 'VOTING'; voteLabel.style.background = 'linear-gradient(135deg, #00b4d8, #0077b6)'; voteLabel.style.boxShadow = '0 0 20px rgba(0,180,216,0.4)'; $('copy-disclaimer').style.display = 'none'; if (msg.proposals_final) finalizeProposals(msg.proposals_final); const initCounts = {}; for (let i = 0; i < (msg.proposal_count || 0); i++) initCounts[i] = 0; showVoteBars(initCounts, 1); break; case 'vote_update': showVoteBars(msg.vote_counts || {}, msg.total_people || 1); break; case 'tiebreaker': currentPhase = 'tiebreaker'; const tieLabel = $('phase-label'); tieLabel.textContent = 'TIEBREAKER'; tieLabel.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)'; tieLabel.style.boxShadow = '0 0 20px rgba(239,68,68,0.4)'; (msg.tied_indices || []).forEach(idx => { const card = $('proposal-' + idx); if (card) card.style.borderColor = '#ef4444'; }); break; case 'tiebreaker_update': if (msg.vote_counts) showVoteBars(msg.vote_counts, 1); break; case 'round_end': currentPhase = 'results'; const resLabel = $('phase-label'); resLabel.textContent = 'RESULTS'; resLabel.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)'; resLabel.style.boxShadow = '0 0 20px rgba(251,191,36,0.4)'; showRoundResults(msg); break; case 'timer': if (msg.game_remaining !== undefined) { $('game-timer').textContent = formatTime(msg.game_remaining); updateTimerStyle(msg.game_remaining); } break; case 'game_over': showGameOver(msg); break; } }
+  function updateTimerStyle(remaining) { const el = $('game-timer'); el.classList.remove('warning','critical'); if (remaining <= 30) el.classList.add('critical'); else if (remaining <= 60) el.classList.add('warning'); }
   connect();
 })();
-</script>
+    </script>
 </body>
 </html>
